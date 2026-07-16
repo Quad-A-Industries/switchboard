@@ -121,6 +121,82 @@
   }
   .nav-user button:hover{border-color:var(--cable); color:#FFAEBB;}
 
+  .admin-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--cable);
+    padding:3px 7px;
+    border-radius:3px;
+    font-weight:600;
+  }
+  .nav-admin-btn{
+    background:none;
+    border:1px solid var(--cable);
+    color:#FFAEBB;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:background .2s, color .2s;
+  }
+  .nav-admin-btn:hover{background:var(--cable); color:var(--ink);}
+
+  .verify-banner{
+    background:rgba(255,84,112,0.08);
+    border-bottom:1px solid rgba(255,84,112,0.25);
+    color:#FFAEBB;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    padding:10px 0;
+    display:none;
+  }
+  .verify-banner.show{display:block;}
+  .verify-banner .wrap{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .verify-banner button{
+    background:none; border:1px solid rgba(255,84,112,0.4); color:#FFAEBB;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+    padding:6px 12px; border-radius:3px; cursor:pointer;
+  }
+  .verify-banner button:hover{background:rgba(255,84,112,0.15);}
+
+  .modal-gate{
+    position:fixed; inset:0; z-index:210;
+    background:rgba(6,12,26,0.92);
+    display:none;
+    align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .modal-gate.show{display:flex;}
+
+  .demo-code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px; letter-spacing:.18em;
+    color:var(--lamp-glow);
+    background:var(--ink);
+    border:1px dashed rgba(56,232,198,0.4);
+    padding:12px 16px; border-radius:4px;
+    text-align:center; margin:14px 0;
+  }
+  .link-btn{
+    background:none; border:none; padding:0; margin-top:10px;
+    font-family:'JetBrains Mono',monospace; font-size:11.5px;
+    color:var(--accent-bright); text-decoration:underline; cursor:pointer;
+    display:block;
+  }
+
+  #admin-panel{display:none;}
+  #admin-panel.show{display:block;}
+  .admin-table{width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+  .admin-table th, .admin-table td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--hairline); color:var(--paper-dim);}
+  .admin-table th{color:var(--accent-bright); text-transform:uppercase; font-size:10.5px; letter-spacing:.06em;}
+  .admin-table td.admin-yes{color:var(--lamp-glow);}
+
   @keyframes pulse-lamp{
     0%,100%{opacity:1;}
     50%{opacity:.45;}
@@ -678,12 +754,62 @@
       <input id="login-password-confirm" type="password" placeholder="••••••••" maxlength="200" autocomplete="new-password">
     </div>
 
+    <button type="button" class="link-btn" id="forgot-password-link" style="margin-bottom:16px;">Forgot password?</button>
+
     <button class="btn-primary" id="login-submit" type="button">Sign in</button>
     <div class="login-error" id="login-error"></div>
 
     <div class="login-fine">
       This account system runs entirely in the browser for this demo board — there's no real server checking these passwords. Don't reuse a password you use anywhere else.
     </div>
+  </div>
+</div>
+
+<div class="modal-gate" id="verify-gate">
+  <div class="login-card">
+    <div class="eyebrow">Email verification</div>
+    <h2>Verify your email</h2>
+    <p class="sub" id="verify-gate-sub">This demo board has no real mail server, so here's the code it would have emailed you:</p>
+    <div class="demo-code" id="verify-gate-code">------</div>
+    <div class="field">
+      <label for="verify-code-input">Enter the code</label>
+      <input id="verify-code-input" type="text" placeholder="6-digit code" maxlength="6">
+    </div>
+    <button class="btn-primary" id="verify-submit" type="button">Verify</button>
+    <div class="login-error" id="verify-error"></div>
+    <button type="button" class="link-btn" id="verify-resend">Resend code</button>
+    <button type="button" class="link-btn" id="verify-close">Do this later</button>
+  </div>
+</div>
+
+<div class="modal-gate" id="reset-gate">
+  <div class="login-card">
+    <div class="eyebrow">Password reset</div>
+    <h2>Reset your password</h2>
+    <p class="sub">Enter your username to get a reset code. This demo board has no real mail server, so the code is shown here instead of emailed.</p>
+    <div class="field">
+      <label for="reset-username">Username</label>
+      <input id="reset-username" type="text" placeholder="e.g. jrivera">
+    </div>
+    <button class="btn-primary" id="reset-send" type="button">Send reset code</button>
+    <div id="reset-step2" style="display:none; margin-top:18px;">
+      <div class="demo-code" id="reset-gate-code">------</div>
+      <div class="field">
+        <label for="reset-code-input">Reset code</label>
+        <input id="reset-code-input" type="text" placeholder="6-digit code" maxlength="6">
+      </div>
+      <div class="field">
+        <label for="reset-new-password">New password</label>
+        <input id="reset-new-password" type="password" placeholder="••••••••">
+      </div>
+      <div class="field">
+        <label for="reset-confirm-password">Confirm new password</label>
+        <input id="reset-confirm-password" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" id="reset-submit" type="button">Reset password</button>
+    </div>
+    <div class="login-error" id="reset-error"></div>
+    <button type="button" class="link-btn" id="reset-close">Back to sign in</button>
   </div>
 </div>
 
@@ -701,11 +827,20 @@
       <a href="#join">Patch in</a>
     </div>
     <div class="nav-user" id="nav-user">
+      <span class="admin-badge" id="nav-admin-badge" style="display:none;">Admin</span>
       <span class="who" id="nav-who"></span>
+      <button type="button" class="nav-admin-btn" id="nav-admin-toggle" style="display:none;">Accounts</button>
       <button type="button" id="nav-logout">Log out</button>
     </div>
   </div>
 </nav>
+
+<div class="verify-banner" id="verify-banner">
+  <div class="wrap">
+    <span>Your email (<span id="verify-banner-email"></span>) isn't verified yet.</span>
+    <button type="button" id="verify-banner-btn">Verify now</button>
+  </div>
+</div>
 
 <header class="hero">
   <div class="wrap" style="display:contents;">
@@ -846,6 +981,23 @@
 
 <hr class="divider">
 
+<section id="admin-panel-section" style="padding-top:56px;">
+  <div class="wrap">
+    <div id="admin-panel">
+      <div class="section-head" style="margin-bottom:24px;">
+        <div class="eyebrow">Admin only</div>
+        <h2 style="font-size:24px;">Registered accounts</h2>
+        <p>Visible only to the admin account. Password hashes are never shown here.</p>
+      </div>
+      <div id="admin-accounts-wrap">
+        <div class="empty-line">Loading accounts…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
 <section id="join">
   <div class="wrap">
     <div class="join">
@@ -958,6 +1110,17 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
   }
 
+  // Six-digit codes used to simulate emailed verification/reset codes.
+  // This demo board has no real mail server, so the "email" is just
+  // shown directly in the UI instead of actually being sent anywhere.
+  function generateCode(){
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  function escapeHtmlLogin(str){
+    return String(str).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
   // One-way hash so the accounts list (which is readable, shared storage —
   // there's no real backend here) doesn't hold plaintext passwords. This is
   // still not real security: anyone could brute-force or rainbow-table a
@@ -1015,6 +1178,11 @@
   const submitBtn = document.getElementById("login-submit");
   const errEl = document.getElementById("login-error");
 
+  const adminBadge = document.getElementById("nav-admin-badge");
+  const adminToggleBtn = document.getElementById("nav-admin-toggle");
+  const adminPanel = document.getElementById("admin-panel");
+  const adminAccountsWrap = document.getElementById("admin-accounts-wrap");
+
   let mode = "signin"; // "signin" | "create"
 
   function setMode(next){
@@ -1028,6 +1196,7 @@
       loginHeading.textContent = "Create an account";
       loginSub.textContent = "Every AI you patch in gets tied to this account, so you can find it again later.";
       submitBtn.textContent = "Create account";
+      document.getElementById("forgot-password-link").style.display = "none";
     }else{
       tabSignin.classList.add("active");
       tabCreate.classList.remove("active");
@@ -1036,6 +1205,7 @@
       loginHeading.textContent = "Sign in to the board";
       loginSub.textContent = "Sign in with your username and password. Each account keeps its own list of assistants it has patched in.";
       submitBtn.textContent = "Sign in";
+      document.getElementById("forgot-password-link").style.display = "block";
     }
   }
 
@@ -1046,7 +1216,28 @@
     gate.style.display = "none";
     siteContent.style.display = "block";
     navWho.textContent = session.username;
+    const isAdmin = session.isAdmin === true;
+    if(adminBadge) adminBadge.style.display = isAdmin ? "inline-block" : "none";
+    if(adminToggleBtn) adminToggleBtn.style.display = isAdmin ? "inline-block" : "none";
+    updateVerifyBanner();
     document.dispatchEvent(new CustomEvent("switchboard:login", { detail: session }));
+  }
+
+  // Accounts created before this feature shipped have no emailVerified
+  // field at all — treat that as verified so nobody gets retroactively
+  // locked out. Only an explicit `false` counts as unverified.
+  async function updateVerifyBanner(){
+    const banner = document.getElementById("verify-banner");
+    const session = getSession();
+    if(!banner || !session){ if(banner) banner.classList.remove("show"); return; }
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, session.username);
+    if(acc && acc.emailVerified === false){
+      document.getElementById("verify-banner-email").textContent = acc.email || "on file";
+      banner.classList.add("show");
+    }else{
+      banner.classList.remove("show");
+    }
   }
 
   function showGate(){
@@ -1139,18 +1330,28 @@
         }
 
         const passwordHash = await hashPassword(password);
+        // No guessable username grants admin. Instead, whoever creates the
+        // very first account on a board with zero existing admins becomes
+        // the bootstrap admin. After that, only an existing admin can
+        // promote anyone else (via the Accounts panel).
+        const isAdmin = !accounts.some(a => a.isAdmin === true);
         const account = {
           username,
           name,
           email,
           passwordHash,
+          isAdmin,
+          emailVerified: false,
+          verificationCode: generateCode(),
+          resetCode: null,
+          resetCodeExpiry: null,
           createdAt: new Date().toISOString()
         };
         accounts.push(account);
         await saveAccounts(accounts);
 
         errEl.className = "login-error";
-        const session = { username, loggedInAt: new Date().toISOString() };
+        const session = { username, isAdmin, loggedInAt: new Date().toISOString() };
         setSession(session);
         showSite(session);
       }else{
@@ -1169,7 +1370,7 @@
         }
 
         errEl.className = "login-error";
-        const session = { username: account.username, loggedInAt: new Date().toISOString() };
+        const session = { username: account.username, isAdmin: account.isAdmin === true, loggedInAt: new Date().toISOString() };
         setSession(session);
         showSite(session);
       }
@@ -1180,6 +1381,203 @@
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
     }
+  });
+
+  async function renderAdminAccounts(){
+    adminAccountsWrap.innerHTML = `<div class="empty-line">Loading accounts…</div>`;
+    const accounts = await loadAccounts();
+    if(!accounts.length){
+      adminAccountsWrap.innerHTML = `<div class="empty-line">No accounts registered yet.</div>`;
+      return;
+    }
+    const session = getSession();
+    const myUsername = (session && session.username || "").toLowerCase();
+    const rows = accounts.map(a => {
+      const verified = a.emailVerified === false ? "No" : "Yes";
+      const isSelf = a.username.toLowerCase() === myUsername;
+      const action = isSelf
+        ? `<span style="opacity:.5;">—</span>`
+        : `<button class="mini-btn" data-role-action="${a.isAdmin ? 'demote' : 'promote'}" data-username="${escapeHtmlLogin(a.username)}">${a.isAdmin ? "Demote" : "Promote"}</button>`;
+      return `
+      <tr>
+        <td>${escapeHtmlLogin(a.username)}</td>
+        <td>${escapeHtmlLogin(a.name || "—")}</td>
+        <td>${escapeHtmlLogin(a.email || "—")}</td>
+        <td class="${a.isAdmin ? 'admin-yes' : ''}">${a.isAdmin ? "Yes" : "No"}</td>
+        <td>${verified}</td>
+        <td>${a.createdAt ? new Date(a.createdAt).toLocaleString() : "—"}</td>
+        <td>${action}</td>
+      </tr>
+    `;
+    }).join("");
+    adminAccountsWrap.innerHTML = `
+      <table class="admin-table">
+        <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Admin</th><th>Verified</th><th>Created</th><th>Action</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  adminAccountsWrap.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-role-action]");
+    if(!btn) return;
+    const username = btn.dataset.username;
+    const action = btn.dataset.roleAction;
+    btn.disabled = true;
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, username);
+    if(acc){
+      acc.isAdmin = action === "promote";
+      await saveAccounts(accounts);
+    }
+    await renderAdminAccounts();
+  });
+
+  if(adminToggleBtn){
+    adminToggleBtn.addEventListener("click", async () => {
+      const showing = adminPanel.classList.toggle("show");
+      adminToggleBtn.textContent = showing ? "Hide accounts" : "Accounts";
+      if(showing){
+        await renderAdminAccounts();
+        adminPanel.scrollIntoView({behavior:"smooth", block:"start"});
+      }
+    });
+  }
+
+  // ===== Email verification modal =====
+  const verifyGate = document.getElementById("verify-gate");
+
+  async function openVerifyGate(){
+    const session = getSession();
+    if(!session) return;
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, session.username);
+    if(!acc) return;
+    document.getElementById("verify-gate-sub").textContent =
+      `This demo board has no real mail server, so here's the code it would have emailed to ${acc.email || "your address"}:`;
+    document.getElementById("verify-gate-code").textContent = acc.verificationCode || "------";
+    document.getElementById("verify-code-input").value = "";
+    document.getElementById("verify-error").className = "login-error";
+    verifyGate.classList.add("show");
+  }
+
+  document.getElementById("verify-banner-btn").addEventListener("click", openVerifyGate);
+  document.getElementById("verify-close").addEventListener("click", () => verifyGate.classList.remove("show"));
+
+  document.getElementById("verify-resend").addEventListener("click", async () => {
+    const session = getSession();
+    if(!session) return;
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, session.username);
+    if(!acc) return;
+    acc.verificationCode = generateCode();
+    await saveAccounts(accounts);
+    document.getElementById("verify-gate-code").textContent = acc.verificationCode;
+  });
+
+  document.getElementById("verify-submit").addEventListener("click", async () => {
+    const session = getSession();
+    const codeEl = document.getElementById("verify-code-input");
+    const verifyErr = document.getElementById("verify-error");
+    if(!session) return;
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, session.username);
+    if(!acc) return;
+    if(codeEl.value.trim() !== acc.verificationCode){
+      verifyErr.textContent = "That code doesn't match. Check it and try again.";
+      verifyErr.className = "login-error show";
+      return;
+    }
+    acc.emailVerified = true;
+    await saveAccounts(accounts);
+    verifyErr.className = "login-error";
+    verifyGate.classList.remove("show");
+    updateVerifyBanner();
+  });
+
+  // ===== Password reset modal =====
+  const resetGate = document.getElementById("reset-gate");
+  let pendingResetUsername = null;
+
+  document.getElementById("forgot-password-link").addEventListener("click", () => {
+    document.getElementById("reset-username").value = document.getElementById("login-username").value.trim();
+    document.getElementById("reset-step2").style.display = "none";
+    document.getElementById("reset-error").className = "login-error";
+    pendingResetUsername = null;
+    resetGate.classList.add("show");
+  });
+  document.getElementById("reset-close").addEventListener("click", () => resetGate.classList.remove("show"));
+
+  document.getElementById("reset-send").addEventListener("click", async () => {
+    const uEl = document.getElementById("reset-username");
+    const resetErr = document.getElementById("reset-error");
+    const username = uEl.value.trim();
+    if(!username){
+      resetErr.textContent = "Enter your username first.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, username);
+    if(!acc){
+      resetErr.textContent = "No account with that username.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    acc.resetCode = generateCode();
+    acc.resetCodeExpiry = Date.now() + 15 * 60 * 1000;
+    await saveAccounts(accounts);
+    pendingResetUsername = acc.username;
+    document.getElementById("reset-gate-code").textContent = acc.resetCode;
+    document.getElementById("reset-step2").style.display = "block";
+    resetErr.className = "login-error";
+  });
+
+  document.getElementById("reset-submit").addEventListener("click", async () => {
+    const resetErr = document.getElementById("reset-error");
+    const codeInput = document.getElementById("reset-code-input").value.trim();
+    const newPw = document.getElementById("reset-new-password").value;
+    const confirmPw = document.getElementById("reset-confirm-password").value;
+
+    if(!pendingResetUsername){
+      resetErr.textContent = "Request a code first.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    if(newPw.length < 6){
+      resetErr.textContent = "Password should be at least 6 characters.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    if(newPw !== confirmPw){
+      resetErr.textContent = "Passwords don't match.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    const accounts = await loadAccounts();
+    const acc = findAccount(accounts, pendingResetUsername);
+    if(!acc){
+      resetErr.textContent = "Something went wrong — try again.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    if(!acc.resetCode || codeInput !== acc.resetCode || Date.now() > (acc.resetCodeExpiry || 0)){
+      resetErr.textContent = "That code is invalid or expired. Send a new one.";
+      resetErr.className = "login-error show";
+      return;
+    }
+    acc.passwordHash = await hashPassword(newPw);
+    acc.resetCode = null;
+    acc.resetCodeExpiry = null;
+    await saveAccounts(accounts);
+
+    resetGate.classList.remove("show");
+    pendingResetUsername = null;
+    document.getElementById("login-username").value = acc.username;
+    document.getElementById("login-password").value = "";
+    setMode("signin");
+    errEl.textContent = "Password reset — sign in with your new password.";
+    errEl.className = "login-error show";
   });
 
   document.getElementById("nav-logout").addEventListener("click", () => {
@@ -1194,6 +1592,8 @@
     if(confirmEl) confirmEl.value = "";
     setMode("signin");
     showGate();
+    if(adminPanel) adminPanel.classList.remove("show");
+    if(adminToggleBtn) adminToggleBtn.textContent = "Accounts";
     document.dispatchEvent(new CustomEvent("switchboard:logout"));
   });
 })();
@@ -1223,6 +1623,16 @@
       return session && session.username ? session.username : null;
     }catch(_e){
       return null;
+    }
+  }
+
+  function currentIsAdmin(){
+    try{
+      const raw = window.localStorage.getItem("switchboard_session");
+      const session = raw ? JSON.parse(raw) : null;
+      return !!(session && session.isAdmin === true);
+    }catch(_e){
+      return false;
     }
   }
 
@@ -1300,6 +1710,7 @@
 
   function render(){
     const me = currentUsername();
+    const amAdmin = currentIsAdmin();
     const verifiedOnly = directory.filter(a => a.verified);
     const live = showMineOnly && me
       ? verifiedOnly.filter(a => a.ownerUsername === me)
@@ -1338,6 +1749,7 @@
       const statusClass = a.status === "on" ? "on" : "idle";
       const statusLabel = a.status === "on" ? "On the line" : "Idle";
       const mine = !!(me && a.ownerUsername === me);
+      const canManage = mine || amAdmin;
       const endpointHtml = a.endpoint
         ? `<a class="jack-endpoint" href="${escapeHtml(a.endpoint)}" target="_blank" rel="noopener noreferrer">${escapeHtml(a.endpoint)}</a>`
         : `<span class="jack-endpoint" style="color:var(--paper-dim); opacity:.5;">no endpoint filed</span>`;
@@ -1355,7 +1767,8 @@
           <div class="jack-actions">
             <button class="mini-btn" data-action="toggle" data-id="${a.id}">${a.status === "on" ? "Set idle" : "Set on the line"}</button>
             ${a.endpoint ? `<button class="mini-btn" data-action="ring" data-id="${a.id}">Ring this line</button>` : ""}
-            ${mine ? `<button class="mini-btn danger" data-action="remove" data-id="${a.id}">Unplug</button><span class="mine-tag">yours</span>` : ""}
+            ${canManage ? `<button class="mini-btn danger" data-action="remove" data-id="${a.id}">Unplug</button>` : ""}
+            ${mine ? `<span class="mine-tag">yours</span>` : (amAdmin ? `<span class="mine-tag" style="color:var(--cable);">admin</span>` : "")}
           </div>
           <div class="ring-result" id="ring-${a.id}"></div>
         </div>
